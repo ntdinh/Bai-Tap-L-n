@@ -1,0 +1,141 @@
+<div class="breadcrumbs" id="breadcrumbs">
+  <ul class="breadcrumb">
+    <li>
+      <i class="ace-icon fa fa-home home-icon"></i>
+      <a href="#">Trang chủ</a>
+    </li>
+    <li class="active">Quản lý tiền vay</li>
+  </ul>
+  <div class="nav-search">
+    <p class="pull-right no-margin">
+      <a (click)="createModal()" class="btn btn-success btn-xs">
+        <i class="fa fa-plus"></i>&nbsp;Thêm
+      </a>
+    </p>
+  </div>
+</div>
+<div class="row">
+
+  <div class="col-xs-12">
+    <!-- PAGE CONTENT BEGINS -->
+    <p-panel header="Tìm kiếm" [style]="{'margin-top': '2px'}">
+      <form class="form-horizontal" role="form" [formGroup]="formsearch"  (ngSubmit)="search()">
+        <div class="form-group">
+          <label class="col-sm-1 control-label no-padding-right"> Người vay </label>
+          <div class="col-sm-11">
+            <input formControlName="nguoivay"  type="text" placeholder="Người vay" />
+          </div>
+        </div>
+         
+        <div class="form-group">
+          <label class="col-sm-1 control-label no-padding-right"></label>
+          <div class="col-sm-11">
+            <button (click)="search()" class="btn btn-sm btn-primary">Tìm kiếm</button>
+          </div>
+        </div>
+      </form> 
+    </p-panel>
+    <p-table selectionMode="single" [value]="Vaytien" styleClass="p-datatable-gridlines">
+      <ng-template pTemplate="header">
+        <tr>
+          <th style="width: 70px; text-align: center;">STT</th>
+          <th style="width: 15%; text-align: left;">Người vay</th>
+          <th style="width: 20%; text-align: left;">Số tiền</th>
+          <th style="text-align: left;">Lãi suất</th>
+          <th style="  text-align: left;">Ngày vay</th>
+          <th style="  text-align: left;">Số điện thoại</th>
+          <th style="width: 120px; text-align: left;">Tác vụ</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-item  let-i="rowIndex">
+        <tr>
+          <td style="width: 70px; text-align: center;">{{ i + 1 }}</td>
+          <td>{{ item.nguoivay }}</td>
+          <td>{{ item.sotien }}</td>
+          <td>{{ item.laisuat }}</td>
+          <td>{{ item.ngayvay }}</td>
+          <td>{{ item.sdt }}</td>
+          <td class="action-col" >
+            <div class="btn-group">
+              <button title="" class="btn btn-xs btn-white btn-default"  (click)="openUpdateModal(item)">  
+                <i class="ace-icon fa fa-edit"></i>
+              </button>
+              <button title="" class="btn btn-xs btn-white btn-default" (click)="onDelete(item)">
+                <i class="ace-icon fa fa-trash"></i>
+              </button>
+            </div>  
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+    <!-- PAGE CONTENT ENDS -->
+  </div>
+  <div class="col-xs-12" style="text-align: right;">
+    <ngb-pagination [collectionSize]="totalRecords" [pageSize]="pageSize" [(page)]="page" [maxSize]="10" [rotate]="true" (pageChange)="loadPage($event)"></ngb-pagination>
+  </div>
+  <!-- /.col -->
+</div>
+<!-- /.row -->
+<div *ngIf="showUpdateModal" id="createUserModal" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg full-height-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4  *ngIf="isCreate" class="modal-title">Nhập thông tin người dùng</h4>
+          <h4 *ngIf="!isCreate" class="modal-title">Sửa thông tin người dùng</h4>
+        </div>
+        <form *ngIf="doneSetupForm" [formGroup]="formdata"  (ngSubmit)="onSubmit(formdata.value)" class="form-horizontal utehy-form">
+          <div class="modal-body no-padding">
+            <div class="form-group">
+              <label class="col-sm-2 control-label no-padding-right">Người vay</label>
+              <div class="col-sm-10">
+                <input type="text" formControlName="nguoivay" placeholder="Người vay" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-sm-2 control-label no-padding-right">Số tiền</label>
+              <div class="col-sm-10">
+                <input type="text" formControlName="sotien" placeholder="Số tiền" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-sm-2 control-label no-padding-right">Lãi suất</label>
+              <div class="col-sm-10">
+                <input type="text" formControlName="laisuat" placeholder="Lãi suất" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-sm-2 control-label no-padding-right"> Ngày vay(<span style="color: red;">*</span>)</label>
+              <div class="col-sm-3">
+                <p-calendar formControlName="ngayvay" [dateFormat]="dateFormat"  [locale]="locale_vn" [showIcon]="true" inputId="icon"></p-calendar>
+                <div *ngIf="submitted && f.ngayvay.errors" class="invalid-feedback">
+                  <div *ngIf="f.ngayvay.errors.required">Không được để trống</div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label class="col-sm-2 control-label no-padding-right"> Số điện thoại</label>
+              <div class="col-sm-10">
+                <input type="text" formControlName="sdt" placeholder="Số điện thoại" />
+              </div>
+            </div>
+           
+             
+           
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default btn-sm" (click)="Reset()">
+            <i class="fa fa-bell"></i> Làm mới
+          </button>
+          <button type="submit" class="btn btn-success btn-sm btn-submit">
+            <i class="fa fa-save"></i> Đồng ý
+          </button>
+          <button type="button" class="btn btn-default btn-sm" (click)="closeModal()">
+            <i class="fa fa-times"></i> Đóng lại
+          </button>
+        </div>
+      </form>  
+      </div>
+    </div>
+  </div>
+ 
